@@ -1,0 +1,185 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hello-world"
+dynamic = ["version"]
+description = "A robust, production-ready Hello World application."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Lomchat" }]
+keywords = ["hello", "world", "greeting", "cli"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+# Zero runtime dependencies, by design.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "hypothesis>=6.100",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/Lomchat/HelloWorld"
+Documentation = "https://github.com/Lomchat/HelloWorld/tree/main/docs"
+Changelog = "https://github.com/Lomchat/HelloWorld/blob/main/CHANGELOG.md"
+Issues = "https://github.com/Lomchat/HelloWorld/issues"
+
+[tool.hatch.version]
+path = "src/hello_world/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hello_world"]
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "A",    # flake8-builtins
+    "ANN",  # flake8-annotations
+    "ARG",  # flake8-unused-arguments
+    "B",    # flake8-bugbear
+    "BLE",  # flake8-blind-except
+    "C4",   # flake8-comprehensions
+    "C90",  # mccabe
+    "D",    # pydocstyle
+    "DTZ",  # flake8-datetimez
+    "E",    # pycodestyle errors
+    "EM",   # flake8-errmsg
+    "ERA",  # eradicate
+    "F",    # pyflakes
+    "FBT",  # flake8-boolean-trap
+    "I",    # isort
+    "ISC",  # flake8-implicit-str-concat
+    "N",    # pep8-naming
+    "PERF", # perflint
+    "PIE",  # flake8-pie
+    "PL",   # pylint
+    "PT",   # flake8-pytest-style
+    "PTH",  # flake8-use-pathlib
+    "RET",  # flake8-return
+    "RSE",  # flake8-raise
+    "RUF",  # ruff-specific rules
+    "S",    # flake8-bandit
+    "SIM",  # flake8-simplify
+    "SLF",  # flake8-self
+    "T20",  # flake8-print
+    "TCH",  # flake8-type-checking
+    "TRY",  # tryceratops
+    "UP",   # pyupgrade
+    "W",    # pycodestyle warnings
+]
+ignore = [
+    "EM101",  # Exception messages as string literals are fine for this project.
+    "EM102",  # Same as above, for f-strings.
+    "TRY003", # Long exception messages are intentional: they must be actionable.
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 5
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "D",       # Test names are self-documenting.
+    "ANN",     # Fixtures and tests do not need full annotations.
+    "S101",    # pytest relies on assert.
+    "PLR2004", # Magic values are expected in assertions.
+    "SLF001",  # Tests may inspect private members.
+    "FBT",     # Boolean parametrization is fine in tests.
+    "S603",    # Subprocess calls in end-to-end tests are trusted.
+]
+"benchmarks/**/*.py" = ["T20", "S101", "D"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# Mypy
+# ---------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unreachable = true
+pretty = true
+show_error_codes = true
+files = ["src"]
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests", "src"]
+pythonpath = ["src", "."]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--doctest-modules",
+    "--import-mode=importlib",
+]
+xfail_strict = true
+filterwarnings = ["error"]
+markers = [
+    "unit: fast, isolated tests of a single unit",
+    "integration: tests exercising several components together",
+    "e2e: end-to-end tests running the real executable in a subprocess",
+    "property: property-based tests powered by Hypothesis",
+    "regression: tests guarding against previously fixed bugs",
+    "security: tests for input hardening and injection resistance",
+    "conformance: tests asserting byte-exact conformance of the output",
+    "concurrency: tests for thread safety",
+    "performance: tests asserting performance budgets",
+]
+
+# ---------------------------------------------------------------------------
+# Coverage
+# ---------------------------------------------------------------------------
+
+[tool.coverage.run]
+branch = true
+source = ["hello_world"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "\\.\\.\\.",
+]

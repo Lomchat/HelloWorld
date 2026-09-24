@@ -10,7 +10,7 @@ def greet() -> None:
 
     Example:
         >>> greet()
-        Hello, World!
+        Hello, World !
     """
     # Print the greeting to standard output.
-    print("Hello, World!")
+    print("Hello, World", "!")

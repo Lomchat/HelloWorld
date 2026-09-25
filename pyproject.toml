@@ -40,6 +40,9 @@ dev = [
     "ruff>=0.5",
 ]
 
+[project.scripts]
+hello-world = "hello_world.hello_world:greet"
+
 [project.urls]
 Homepage = "https://github.com/Lomchat/HelloWorld"
 Documentation = "https://github.com/Lomchat/HelloWorld/tree/main/docs"

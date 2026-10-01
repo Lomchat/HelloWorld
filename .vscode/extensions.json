@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.mypy-type-checker",
+    "charliermarsh.ruff",
+    "editorconfig.editorconfig",
+    "tamasfe.even-better-toml",
+    "bierner.markdown-mermaid",
+    "anthropic.claude-code"
+  ]
+}

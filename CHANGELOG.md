@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-08
+
+### Added
+
+- `main()`, the new entry point of the application, which prints the greeting.
+
+### Changed
+
+- **BREAKING:** `greet()` now returns the greeting instead of printing it ([#95], see [ADR-0003](docs/adr/0003-separate-greeting-composition-from-output.md)). See the [migration guide](docs/migration/v1-to-v2.md).
+- **BREAKING:** The `hello-world` console script now points to `hello_world.hello_world:main`.
+
 ## [1.1.1] - 2026-09-29
 
 ### Fixed
@@ -42,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Lomchat/HelloWorld/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/Lomchat/HelloWorld/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Lomchat/HelloWorld/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/Lomchat/HelloWorld/compare/v1.0.0...v1.0.1
@@ -51,3 +63,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#42]: https://github.com/Lomchat/HelloWorld/issues/42
 [#57]: https://github.com/Lomchat/HelloWorld/issues/57
 [#64]: https://github.com/Lomchat/HelloWorld/issues/64
+[#95]: https://github.com/Lomchat/HelloWorld/issues/95

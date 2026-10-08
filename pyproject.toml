@@ -41,7 +41,7 @@ dev = [
 ]
 
 [project.scripts]
-hello-world = "hello_world.hello_world:greet"
+hello-world = "hello_world.hello_world:main"
 
 [project.urls]
 Homepage = "https://github.com/Lomchat/HelloWorld"

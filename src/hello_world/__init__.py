@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from hello_world.hello_world import greet
+from hello_world.hello_world import greet, main
 
 __version__ = "1.1.1"
 
-__all__ = ["__version__", "greet"]
+__all__ = ["__version__", "greet", "main"]

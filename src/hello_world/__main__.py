@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hello_world.hello_world import greet
+from hello_world.hello_world import main
 
 if __name__ == "__main__":
-    raise SystemExit(greet())
+    raise SystemExit(main())

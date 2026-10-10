@@ -15,7 +15,14 @@ def greet() -> str:
     return "Hello, World!"
 
 
-def main() -> None:
-    """Print the greeting to standard output."""
+def main() -> int:
+    """Print the greeting to standard output.
+
+    Returns:
+        The process exit code. ``0`` indicates success.
+    """
     # Print the greeting to standard output.
     print(greet())  # noqa: T201 - Printing the greeting is the purpose of this application.
+
+    # Return 0 to indicate successful execution.
+    return 0

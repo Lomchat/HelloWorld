@@ -12,3 +12,7 @@ def test_greet_returns_the_greeting():
 def test_main_prints_the_greeting(capsys):
     main()
     assert capsys.readouterr().out == "Hello, World!\n"
+
+
+def test_main_returns_zero():
+    assert main() == 0

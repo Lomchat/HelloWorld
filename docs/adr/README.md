@@ -12,6 +12,7 @@ An ADR captures an important architectural decision, along with its context and 
 | [0002](0002-use-python.md)                                           | Use Python                                           | Accepted | 2026-09-15 |
 | [0003](0003-separate-greeting-composition-from-output.md)            | Separate greeting composition from output            | Accepted | 2026-10-06 |
 | [0004](0004-single-module-layout.md)                                 | Single-module layout                                 | Accepted | 2026-10-06 |
+| [0005](0005-defer-internationalization.md)                           | Defer internationalization                           | Accepted | 2026-10-12 |
 
 ## Creating a new ADR
 

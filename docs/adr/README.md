@@ -13,6 +13,7 @@ An ADR captures an important architectural decision, along with its context and 
 | [0003](0003-separate-greeting-composition-from-output.md)            | Separate greeting composition from output            | Accepted | 2026-10-06 |
 | [0004](0004-single-module-layout.md)                                 | Single-module layout                                 | Accepted | 2026-10-06 |
 | [0005](0005-defer-internationalization.md)                           | Defer internationalization                           | Accepted | 2026-10-12 |
+| [0006](0006-define-the-greeting-as-a-module-level-constant.md)       | Define the greeting as a module-level constant       | Accepted | 2026-10-15 |
 
 ## Creating a new ADR
 

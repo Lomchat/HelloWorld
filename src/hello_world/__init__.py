@@ -15,6 +15,6 @@ from hello_world.hello_world import GREETING, greet, main
 
 # The package version, following Semantic Versioning 2.0.0 (https://semver.org).
 # This is the single source of truth, read by the build backend (see pyproject.toml).
-__version__ = "2.0.1"
+__version__ = "2.1.0"
 
 __all__ = ["GREETING", "__version__", "greet", "main"]

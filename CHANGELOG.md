@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-16
+
+### Added
+
+- `GREETING` module-level constant, annotated as `Final[str]`, as the single source of truth for the greeting (see [ADR-0006](docs/adr/0006-define-the-greeting-as-a-module-level-constant.md)).
+- Explicit `__all__` declarations in every public module.
+
+### Changed
+
+- `greet()` now returns `GREETING` instead of a string literal.
+
+### Fixed
+
+- A diverging copy of the greeting literal produced a duplicated exclamation mark ([#88]).
+
 ## [2.0.1] - 2026-10-10
 
 ### Fixed
@@ -59,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/Lomchat/HelloWorld/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Lomchat/HelloWorld/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Lomchat/HelloWorld/compare/v1.1.1...v2.0.0
 [1.1.1]: https://github.com/Lomchat/HelloWorld/compare/v1.1.0...v1.1.1
@@ -71,4 +87,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#51]: https://github.com/Lomchat/HelloWorld/issues/51
 [#57]: https://github.com/Lomchat/HelloWorld/issues/57
 [#64]: https://github.com/Lomchat/HelloWorld/issues/64
+[#88]: https://github.com/Lomchat/HelloWorld/issues/88
 [#95]: https://github.com/Lomchat/HelloWorld/issues/95

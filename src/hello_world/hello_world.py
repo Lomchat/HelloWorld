@@ -1,7 +1,10 @@
 """Core implementation of the Hello World application.
 
-This module exposes a small, stable public API:
+This module contains the complete business logic of the application and
+exposes a small, stable public API:
 
+* :data:`GREETING`: the canonical greeting, defined once as the single source
+  of truth (see ADR-0006);
 * :func:`greet`: returns the greeting, without any side effect;
 * :func:`main`: prints the greeting to standard output and returns an exit
   code.
@@ -16,7 +19,14 @@ Example:
 
 from __future__ import annotations
 
-__all__ = ["greet", "main"]
+from typing import Final
+
+__all__ = ["GREETING", "greet", "main"]
+
+# The canonical greeting displayed by the application.
+# IMPORTANT: This value is part of the public contract of the application.
+# Any change MUST be reflected in the conformance test suite (tests/conformance/).
+GREETING: Final[str] = "Hello, World!"
 
 
 def greet() -> str:
@@ -33,7 +43,7 @@ def greet() -> str:
         'Hello, World!'
     """
     # Return the greeting.
-    return "Hello, World!!"
+    return GREETING
 
 
 def main() -> int:
@@ -55,3 +65,8 @@ def main() -> int:
 
     # Return 0 to indicate successful execution.
     return 0
+
+
+if __name__ == "__main__":  # pragma: no cover - exercised by the end-to-end suite
+    # Propagate the exit code to the operating system.
+    raise SystemExit(main())

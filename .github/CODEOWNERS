@@ -1,0 +1,24 @@
+# Code owners are automatically requested for review on pull requests that
+# modify the files they own. See:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repository.
+*                                   @Lomchat
+
+# The core implementation and the output contract.
+/src/hello_world/hello_world.py     @Lomchat
+/tests/conformance/                 @Lomchat
+/tests/regression/                  @Lomchat
+
+# Security-sensitive files.
+/tests/security/                    @Lomchat
+/SECURITY.md                        @Lomchat
+/.github/workflows/                 @Lomchat
+
+# Architecture decisions.
+/docs/adr/                          @Lomchat
+
+# AI assistant configuration.
+/CLAUDE.md                          @Lomchat
+/AGENTS.md                          @Lomchat
+/.claude/                           @Lomchat

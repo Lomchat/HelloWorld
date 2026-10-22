@@ -1,0 +1,41 @@
+name: ✨ Feature request
+description: Suggest an idea for Hello World
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Before submitting, please check the [roadmap](../blob/main/README.md#️-roadmap) and the [Architecture Decision Records](../tree/main/docs/adr): your idea may already have been evaluated.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem does this feature solve? Please describe the use case, not the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you consider, and why were they rejected?
+
+  - type: dropdown
+    id: output-impact
+    attributes:
+      label: Does this feature change the default output?
+      description: The default output is a byte-exact public contract. Changing it is a breaking change.
+      options:
+        - "No"
+        - "Yes (breaking change, requires a new major version and an ADR)"
+    validations:
+      required: true

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-10-23
+
+### Security
+
+- Added a security test suite verifying that the output is free of 22 known terminal injection vectors and of every C0 control character.
+- Added environment isolation tests guaranteeing that the output cannot be influenced by locale, terminal or color settings.
+
+### Added
+
+- Byte-exact conformance test suite, including MD5, SHA-1, SHA-256 and CRC32 fingerprints and a snapshot of the canonical output.
+
 ## [2.1.0] - 2026-10-16
 
 ### Added
@@ -74,7 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Lomchat/HelloWorld/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Lomchat/HelloWorld/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Lomchat/HelloWorld/compare/v1.1.1...v2.0.0

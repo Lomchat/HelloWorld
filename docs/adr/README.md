@@ -14,6 +14,7 @@ An ADR captures an important architectural decision, along with its context and 
 | [0004](0004-single-module-layout.md)                                 | Single-module layout                                 | Accepted | 2026-10-06 |
 | [0005](0005-defer-internationalization.md)                           | Defer internationalization                           | Accepted | 2026-10-12 |
 | [0006](0006-define-the-greeting-as-a-module-level-constant.md)       | Define the greeting as a module-level constant       | Accepted | 2026-10-15 |
+| [0007](0007-enforce-full-test-coverage.md)                           | Enforce full test coverage                           | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 

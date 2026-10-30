@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-10-30
+
+### Added
+
+- Property-based test suite powered by Hypothesis.
+- Thread-safety test suite.
+- Performance budget test suite.
+- Multi-stage `Dockerfile` running as a non-root user, with a health check.
+- `make bench` target and `benchmarks/` directory.
+
+### Changed
+
+- Raised the minimum coverage threshold from 95% to 100% (see [ADR-0007](docs/adr/0007-enforce-full-test-coverage.md)).
+
 ## [2.2.0] - 2026-10-23
 
 ### Security
@@ -85,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/Lomchat/HelloWorld/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Lomchat/HelloWorld/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/Lomchat/HelloWorld/compare/v2.0.0...v2.0.1

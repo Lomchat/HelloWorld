@@ -61,7 +61,7 @@ def main() -> int:
         0
     """
     # Print the greeting to standard output.
-    print(greet() + "\n")  # noqa: T201 - Printing the greeting is the purpose of this application.
+    print(greet())  # noqa: T201 - Printing the greeting is the purpose of this application.
 
     # Return 0 to indicate successful execution.
     return 0

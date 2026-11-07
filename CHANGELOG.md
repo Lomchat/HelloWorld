@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.1] - 2026-11-07
+
+### Fixed
+
+- Fixed a double newline at the end of the output: `main()` called `print(greet() + "\n")` ([#73]).
+
 ## [2.3.0] - 2026-10-30
 
 ### Added
@@ -99,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/Lomchat/HelloWorld/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Lomchat/HelloWorld/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Lomchat/HelloWorld/compare/v2.0.1...v2.1.0
@@ -114,5 +121,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#51]: https://github.com/Lomchat/HelloWorld/issues/51
 [#57]: https://github.com/Lomchat/HelloWorld/issues/57
 [#64]: https://github.com/Lomchat/HelloWorld/issues/64
+[#73]: https://github.com/Lomchat/HelloWorld/issues/73
 [#88]: https://github.com/Lomchat/HelloWorld/issues/88
 [#95]: https://github.com/Lomchat/HelloWorld/issues/95

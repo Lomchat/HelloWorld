@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Planned
+
+- Internationalization support (deferred, see [ADR-0005](docs/adr/0005-defer-internationalization.md)).
+- `agreet()`, an asynchronous variant of `greet()` for applications running inside an event loop.
+- OpenTelemetry instrumentation of `main()`.
+- Re-evaluate the single-module layout once `hello_world.py` exceeds 500 lines (see [ADR-0004](docs/adr/0004-single-module-layout.md)).
+
 ## [2.3.1] - 2026-11-07
 
 ### Fixed

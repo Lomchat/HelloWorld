@@ -25,8 +25,11 @@ SRC_DIR = PROJECT_ROOT / "src"
 #: Path to the core module, runnable as a standalone script.
 MODULE_PATH = SRC_DIR / "hello_world" / "hello_world.py"
 
-#: The exact bytes the program must write to stdout.
-EXPECTED_STDOUT = b"Hello, World!\n"
+#: The exact bytes the program must write to stdout when run as a process.
+#: In a subprocess, stdout is opened in text mode, so the line feed is translated
+#: to the platform line separator ("\r\n" on Windows). In-process tests, which
+#: capture stdout without translation, always observe "\n".
+EXPECTED_STDOUT = f"Hello, World!{os.linesep}".encode("ascii")
 
 
 def run_hello_world(

@@ -1,0 +1,18 @@
+# Normalize line endings to LF in the repository and in working copies,
+# on every platform. See https://git-scm.com/docs/gitattributes
+* text=auto eol=lf
+
+# Snapshots are byte-exact references: never convert them.
+tests/conformance/snapshots/** -text
+
+# Shell scripts must keep LF endings to remain executable.
+*.sh text eol=lf
+
+# Exclude development-only files from source archives (git archive).
+.claude/          export-ignore
+.github/          export-ignore
+.vscode/          export-ignore
+benchmarks/       export-ignore
+CLAUDE.md         export-ignore
+AGENTS.md         export-ignore
+IMPLEMENTATION_SUMMARY.md export-ignore

@@ -1,6 +1,6 @@
 # ADR-0006: Define the greeting as a module-level constant
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0009](0009-reduce-the-implementation-to-a-single-statement.md)
 - **Date:** 2026-10-15
 - **Deciders:** @maintainers
 - **Related issues:** #88

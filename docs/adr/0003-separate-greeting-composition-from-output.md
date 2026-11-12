@@ -1,6 +1,6 @@
 # ADR-0003: Separate greeting composition from output
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0009](0009-reduce-the-implementation-to-a-single-statement.md)
 - **Date:** 2026-10-06
 - **Deciders:** @maintainers
 - **Related issues:** #95

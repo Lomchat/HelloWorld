@@ -10,12 +10,13 @@ An ADR captures an important architectural decision, along with its context and 
 | -------------------------------------------------------------------- | ---------------------------------------------------- | -------- | ---------- |
 | [0001](0001-record-architecture-decisions.md)                        | Record architecture decisions                        | Accepted | 2026-09-15 |
 | [0002](0002-use-python.md)                                           | Use Python                                           | Accepted | 2026-09-15 |
-| [0003](0003-separate-greeting-composition-from-output.md)            | Separate greeting composition from output            | Accepted | 2026-10-06 |
+| [0003](0003-separate-greeting-composition-from-output.md)            | Separate greeting composition from output            | Superseded by [0009](0009-reduce-the-implementation-to-a-single-statement.md) | 2026-10-06 |
 | [0004](0004-single-module-layout.md)                                 | Single-module layout                                 | Accepted | 2026-10-06 |
 | [0005](0005-defer-internationalization.md)                           | Defer internationalization                           | Accepted | 2026-10-12 |
-| [0006](0006-define-the-greeting-as-a-module-level-constant.md)       | Define the greeting as a module-level constant       | Accepted | 2026-10-15 |
+| [0006](0006-define-the-greeting-as-a-module-level-constant.md)       | Define the greeting as a module-level constant       | Superseded by [0009](0009-reduce-the-implementation-to-a-single-statement.md) | 2026-10-15 |
 | [0007](0007-enforce-full-test-coverage.md)                           | Enforce full test coverage                           | Accepted | 2026-10-27 |
 | [0008](0008-use-print-for-output.md)                                 | Use `print()` for output                             | Accepted | 2026-11-05 |
+| [0009](0009-reduce-the-implementation-to-a-single-statement.md)      | Reduce the implementation to a single statement      | Accepted | 2026-11-12 |
 
 ## Creating a new ADR
 

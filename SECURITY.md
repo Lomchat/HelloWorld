@@ -23,7 +23,7 @@ Please include as much of the following information as possible:
 - The type of issue (e.g. terminal injection, output tampering, supply chain)
 - The affected version(s)
 - Step-by-step instructions to reproduce the issue
-- The exact bytes written to stdout (`hello-world | od -c`)
+- The exact bytes written to stdout (`python -m hello_world | od -c`)
 - The potential impact of the issue
 
 ## Response Timeline

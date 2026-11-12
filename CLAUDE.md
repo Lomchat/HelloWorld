@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`hello-world` is a production-grade, fully typed Python implementation of the canonical "Hello, World!" program.
+`hello-world` is a production-grade Python implementation of the canonical "Hello, World!" program. The entire implementation is a single statement (ADR-0009).
 
 - **Language:** Python 3.10+ (developed on 3.12)
-- **Runtime dependencies:** none (standard library only). Keep it that way.
+- **Runtime dependencies:** none (not even an import). Keep it that way.
 - **Current version:** see `__version__` in `src/hello_world/__init__.py`
 
 ## Commands
@@ -19,14 +19,14 @@ make coverage       # run tests with coverage (fails under 100%)
 make lint           # ruff check + ruff format --check
 make format         # auto-format with ruff
 make typecheck      # mypy --strict
-make check          # lint + typecheck + coverage (run this before finishing ANY task)
+make check          # lint + typecheck + coverage + output verification (run this before finishing ANY task)
 make bench          # run micro-benchmarks
 ```
 
 Run a single test:
 
 ```bash
-.venv/bin/pytest tests/unit/test_greet.py::TestReturnValue::test_returns_the_canonical_greeting
+.venv/bin/pytest tests/unit/test_hello_world_module.py::TestStructure::test_contains_exactly_one_statement
 ```
 
 Run a single category: `.venv/bin/pytest -m security` (markers: `unit`, `integration`, `e2e`, `property`, `regression`, `security`, `conformance`, `concurrency`, `performance`).
@@ -34,16 +34,15 @@ Run a single category: `.venv/bin/pytest -m security` (markers: `unit`, `integra
 ## Architecture
 
 ```
-hello-world (console script) ──┐
-                               ├──► main() ──► greet() ──► GREETING
-python -m hello_world ─────────┘      │
-                                      └──► print() ──► stdout
+python -m hello_world ──► __main__.py ──► runpy ──┐
+                                                  ├──► hello_world.py: print("Hello, World!") ──► stdout
+python src/hello_world/hello_world.py ────────────┘
 ```
 
-- The **entire implementation** lives in `src/hello_world/hello_world.py` (see ADR-0004).
-- `__init__.py` only re-exports the public API and defines `__version__`.
-- `__main__.py` only calls `main()`.
-- **Do NOT create new modules in `src/`.** `tests/unit/test_package.py` enforces the exact list of source files.
+- The **entire implementation** is the single statement in `src/hello_world/hello_world.py` (ADR-0009).
+- `__init__.py` only defines `__version__`. It MUST NOT import the core module (#95).
+- `__main__.py` executes the core module with `runpy.run_module()`. It does not import it: a module only runs on its first import.
+- **Do NOT create new modules in `src/`.** `tests/unit/test_package.py` enforces the exact list of source files (ADR-0004).
 - Architectural decisions are documented in `docs/adr/`. Read them before changing anything.
 
 ## Critical Invariants
@@ -51,22 +50,20 @@ python -m hello_world ─────────┘      │
 **IMPORTANT: These invariants MUST NEVER be broken. If a change would break one of them, STOP and ask.**
 
 1. The program MUST write exactly `Hello, World!` followed by a single `\n` to stdout. Nothing else. Byte for byte. Nothing on stderr.
-2. `greet()` MUST be pure: no side effects, no I/O, always the same return value.
-3. `main()` MUST return `0` (an `int`, not `None`, not `True`) (#51).
-4. The string `"Hello, World!"` MUST be defined exactly once in `src/`, as `GREETING` (ADR-0006).
-5. Test coverage MUST stay at **100%** (lines and branches).
-6. `mypy --strict` MUST pass with zero errors.
-7. Zero runtime dependencies.
+2. `src/hello_world/hello_world.py` MUST contain **exactly one statement**: `print("Hello, World!")`. No import, no variable, no function, no class, no docstring (ADR-0009). This is verified by parsing the source with `ast`.
+3. Importing the `hello_world` package MUST NOT print anything (#95).
+4. Test coverage MUST stay at **100%** (lines and branches).
+5. `mypy --strict` MUST pass with zero errors.
+6. Zero runtime dependencies.
 
 You can verify invariant 1 at any time with `python -m hello_world | od -c`.
 
 ## Code Style
 
-- Every module and function MUST have a Google-style docstring with `Returns:` and `Example:` sections.
-- Every function MUST be fully type-annotated.
-- Every module MUST start with `from __future__ import annotations`.
-- Every public module MUST declare `__all__`, sorted.
-- `print()` is allowed ONLY in `main()`, with its `# noqa: T201` justification comment (ADR-0008).
+- The core module is documented **with comments only**. A docstring is an expression statement and would violate invariant 2.
+- The core module comments MUST keep their sections: Overview, Execution, Design principles, Output contract, Security considerations, Error handling, Performance, Maintenance notes (enforced by the unit tests).
+- Support modules (`__init__.py`, `__main__.py`) MUST have a docstring and start with `from __future__ import annotations`.
+- `print()` is allowed ONLY in the core module, with its `# noqa: T201` justification comment (ADR-0008).
 - Comments should explain *why*, not *what*.
 - Source files MUST be ASCII-only, with no trailing whitespace.
 - Line length: 100.
@@ -76,20 +73,23 @@ You can verify invariant 1 at any time with `python -m hello_world | od -c`.
 - Every change MUST come with tests. No exceptions.
 - Every bug fix MUST come with a regression test in `tests/regression/test_known_issues.py`, named `test_issue_<number>_<description>` with a docstring referencing the issue.
 - NEVER delete or weaken a regression, conformance or security test.
-- Properties of the greeting must be tested on **every surface** using the `greeting` fixture from `tests/conftest.py` (`greet()`, `GREETING` and the stdout of `main()`).
-- Use the helpers in `tests/helpers.py` (`run_hello_world`, `patched_environ`). Do NOT use `unittest.mock`.
-- Hypothesis tests MUST NOT use function-scoped fixtures (`monkeypatch`, `capsys`...). Use `patched_environ` and `contextlib.redirect_stdout` instead.
-- Never write raw invisible characters in test files. Always use escape sequences (`"‮"`).
+- Properties of the greeting must be tested through **every entry point** using the `greeting` fixture from `tests/conftest.py`.
+- Use the helpers in `tests/helpers.py` (`run_in_process`, `run_hello_world`, `patched_environ`). Do NOT use `unittest.mock`.
+- NEVER `import hello_world.hello_world` in tests: importing it executes it, and later `runpy` executions then emit a `RuntimeWarning` (treated as an error). Use `run_in_process()`.
+- Hypothesis tests MUST NOT use function-scoped fixtures (`monkeypatch`, `capsys`...). Use `patched_environ` and `run_in_process` instead.
+- Never write raw invisible characters in test files. Always use escape sequences (`"\u202e"`).
 - The full suite must stay under 10 seconds.
 
 ## Common Pitfalls
 
-- **Do NOT inline `greet()` into `main()`.** The separation between composition and output is intentional (ADR-0003).
-- **Do NOT replace `print()` with `sys.stdout.write()`.** It requires manual newline handling, which caused #73 (ADR-0008).
-- Do NOT add argument parsing. `main()` takes no arguments and ignores `sys.argv` by design.
-- Do NOT add a second occurrence of the greeting string in `src/`. Reference `GREETING` instead.
-- Do NOT remove the space after the comma (#42), nor add one before the exclamation mark (#57).
-- Do NOT add `print(greet() + "\n")`: `print()` already appends a newline (#73).
+- **Do NOT add a docstring to `hello_world.py`.** It would count as a second statement.
+- **Do NOT reintroduce `greet()`, `main()` or `GREETING`** without a new ADR superseding ADR-0009.
+- **Do NOT replace `print()` with `sys.stdout.write()`.** It requires an import (a second statement) and manual newline handling, which caused #73 (ADR-0008).
+- Do NOT split the greeting into several arguments: `print()` inserts a space between them (#57).
+- Do NOT append `"\n"` to the greeting: `print()` already terminates the line (#73).
+- Do NOT import the core module from `__init__.py` (#95).
+- Do NOT add argument parsing. The application ignores `sys.argv` by design.
+- Do NOT remove the space after the comma (#42).
 
 ## Workflow
 

@@ -4,44 +4,37 @@ This document describes the architecture of the hello-world application. For the
 
 ## Overview
 
-Hello World follows the **functional core, imperative shell** pattern:
+The entire implementation of Hello World is a single statement, located in `src/hello_world/hello_world.py` ([ADR-0009](adr/0009-reduce-the-implementation-to-a-single-statement.md)):
 
-- the **functional core** (`greet()`) builds the greeting, without any side effect;
-- the **imperative shell** (`main()`) performs the I/O and reports the exit code.
+```python
+print("Hello, World!")
+```
 
-The whole implementation lives in a single module ([ADR-0004](adr/0004-single-module-layout.md)).
+The rest of the package only provides entry points and metadata.
 
 ## Components
 
 ```mermaid
 flowchart TB
     subgraph Entry points
-        Script["hello-world<br/><i>console script</i>"]
         DashM["python -m hello_world<br/><i>__main__.py</i>"]
-        Direct["python hello_world.py<br/><i>script guard</i>"]
+        Direct["python hello_world.py<br/><i>standalone script</i>"]
     end
 
     subgraph hello_world.py
-        Main["main() → int<br/><i>imperative shell</i>"]
-        Greet["greet() → str<br/><i>functional core</i>"]
-        Constant[["GREETING: Final[str]<br/><i>single source of truth</i>"]]
+        Statement["print(&quot;Hello, World!&quot;)<br/><i>single statement</i>"]
     end
 
-    Script --> Main
-    DashM --> Main
-    Direct --> Main
-    Main --> Greet
-    Greet --> Constant
-    Main --> Stdout[("stdout")]
+    DashM -->|runpy.run_module| Statement
+    Direct --> Statement
+    Statement --> Stdout[("stdout")]
 ```
 
-| Component     | Responsibility                                   | Side effects     | ADR                                                                          |
-| ------------- | ------------------------------------------------ | ---------------- | ---------------------------------------------------------------------------- |
-| `GREETING`    | Holds the canonical greeting                     | None             | [0006](adr/0006-define-the-greeting-as-a-module-level-constant.md)           |
-| `greet()`     | Composes the greeting                            | None             | [0003](adr/0003-separate-greeting-composition-from-output.md)                |
-| `main()`      | Writes the greeting and returns the exit code    | Writes to stdout | [0003](adr/0003-separate-greeting-composition-from-output.md), [0008](adr/0008-use-print-for-output.md) |
-| `__main__.py` | Enables `python -m hello_world`                  | Exits the process | [0004](adr/0004-single-module-layout.md)                                    |
-| `__init__.py` | Exposes the public API and the version           | None             | [0004](adr/0004-single-module-layout.md)                                     |
+| Component        | Responsibility                                   | Side effects      | ADR                                                                        |
+| ---------------- | ------------------------------------------------ | ----------------- | -------------------------------------------------------------------------- |
+| `hello_world.py` | Prints the greeting                              | Writes to stdout  | [0008](adr/0008-use-print-for-output.md), [0009](adr/0009-reduce-the-implementation-to-a-single-statement.md) |
+| `__main__.py`    | Enables `python -m hello_world`                  | Executes the core module | [0004](adr/0004-single-module-layout.md), [0009](adr/0009-reduce-the-implementation-to-a-single-statement.md) |
+| `__init__.py`    | Exposes the package version                      | None              | [0004](adr/0004-single-module-layout.md)                                   |
 
 ## Execution flow
 
@@ -50,27 +43,31 @@ sequenceDiagram
     autonumber
     actor User
     participant OS as Operating system
-    participant Main as main()
-    participant Greet as greet()
+    participant Main as __main__.py
+    participant Core as hello_world.py
     participant Stdout as sys.stdout
 
-    User->>OS: hello-world
-    OS->>Main: invoke console script
-    Main->>Greet: greet()
-    Greet-->>Main: GREETING ("Hello, World!")
-    Main->>Stdout: print(greeting)
+    User->>OS: python -m hello_world
+    OS->>Main: execute as __main__
+    Main->>Core: runpy.run_module("hello_world.hello_world")
+    Core->>Stdout: print("Hello, World!")
     Stdout-->>User: Hello, World!\n
-    Main-->>OS: return 0
+    Core-->>Main: return
+    Main-->>OS: normal termination
     OS-->>User: exit status 0
 ```
 
+## Why `runpy` instead of `import`?
+
+A Python module is executed only once per process: on its first import. Subsequent imports return the cached module from `sys.modules` without executing it again. `__main__.py` therefore executes the core module with `runpy.run_module()`, which guarantees that the greeting is printed every time the entry point runs.
+
 ## Design principles
 
-1. **Purity first.** Everything that can be pure is pure. I/O is confined to a single line of `main()`.
-2. **Single source of truth.** The greeting exists exactly once in the codebase.
+1. **Minimalism.** The implementation is the shortest correct program. Any additional statement requires an ADR.
+2. **No side effects on import.** Importing the `hello_world` package prints nothing (#95).
 3. **Byte-exact contract.** The output is a public API. It is pinned down by the conformance test suite, including cryptographic fingerprints.
 4. **Hermeticity.** The output does not depend on the environment, the locale, the terminal or the command-line arguments.
-5. **Simplicity.** No abstraction is introduced without a documented need (YAGNI).
+5. **Documentation next to the code.** Every design decision affecting the statement is documented in the comments surrounding it.
 
 ## Non-functional characteristics
 
@@ -78,6 +75,6 @@ sequenceDiagram
 | -------------- | ------------------------------------------- | ------------------------------- |
 | Correctness    | Output is exactly `Hello, World!\n`         | `tests/conformance/`            |
 | Security       | No terminal injection vector in the output  | `tests/security/`               |
-| Performance    | `greet()` under 10 µs, cold start under 2 s | `tests/performance/`            |
-| Thread safety  | Safe under concurrent calls                 | `tests/concurrency/`            |
+| Performance    | Execution under 100 µs, cold start under 2 s | `tests/performance/`           |
+| Thread safety  | Stateless by construction                   | `tests/concurrency/`            |
 | Portability    | Python 3.10 to 3.13, Linux, macOS, Windows  | CI matrix                       |

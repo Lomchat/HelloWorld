@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/Lomchat/HelloWorld/actions/workflows/ci.yml/badge.svg)](https://github.com/Lomchat/HelloWorld/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](docs/testing-strategy.md)
-[![Tests](https://img.shields.io/badge/tests-440%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-429%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
 [![Typed: mypy --strict](https://img.shields.io/badge/typed-mypy%20--strict-blue)](https://mypy.readthedocs.io/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -15,10 +15,10 @@
 
 [Features](#-features) •
 [Quick Start](#-quick-start) •
+[Implementation](#-implementation) •
 [Architecture](#️-architecture) •
 [Testing](#-testing) •
-[FAQ](#-faq) •
-[Contributing](#-contributing)
+[FAQ](#-faq)
 
 </div>
 
@@ -32,23 +32,23 @@ battle-tested foundation for greeting the world reliably, securely and
 consistently, on every platform.
 
 ```console
-$ hello-world
+$ python -m hello_world
 Hello, World!
 ```
 
 ## ✨ Features
 
-- 🎯 **Separation of Concerns**: greeting composition (`greet()`) is fully decoupled from output (`main()`).
-- 🧱 **Single Source of Truth**: the greeting is defined exactly once, as a `Final` constant.
-- 🧪 **Thoroughly Tested**: 440 tests across 10 categories, 100% line and branch coverage.
+- 🎯 **Minimal by Design**: the entire implementation is a single statement ([ADR-0009](docs/adr/0009-reduce-the-implementation-to-a-single-statement.md)).
+- 📝 **Thoroughly Documented**: every design decision is explained in the comments surrounding the implementation (76 lines of comments).
+- 🧪 **Thoroughly Tested**: 429 tests across 9 categories, 100% line and branch coverage.
 - 🛡️ **Secure by Design**: output verified against 22 terminal injection vectors and every control character.
 - 🔒 **Hermetic**: output is guaranteed to be independent of locale, terminal settings, environment variables and command-line arguments.
 - 🔍 **Fully Typed**: passes `mypy --strict` and ships a `py.typed` marker.
-- ⚡ **Fast**: under 10 µs per greeting, with performance budgets enforced in CI.
-- 🧵 **Thread-Safe**: `greet()` is pure and returns an immutable value.
-- 📦 **Zero Runtime Dependencies**: only the Python standard library.
+- ⚡ **Fast**: constant time, O(1), with performance budgets enforced in CI.
+- 🧵 **Thread-Safe**: stateless by construction. No variable, no function, no class.
+- 📦 **Zero Dependencies**: not a single import.
 - 🐳 **Container Ready**: multi-stage, non-root Docker image with a health check.
-- 📚 **Documented Decisions**: every design choice is recorded in an [ADR](docs/adr/).
+- 📚 **Documented Decisions**: every design choice is recorded in one of 9 [ADRs](docs/adr/).
 
 ## 🚀 Quick Start
 
@@ -70,33 +70,18 @@ cd HelloWorld
 make install
 ```
 
-### Command line
+### Usage
 
 ```console
-$ hello-world
-Hello, World!
-
 $ python -m hello_world
 Hello, World!
 ```
 
-### Python API
+The core module can also be run directly as a script:
 
-```python
-from hello_world import greet
-
-greeting = greet()  # "Hello, World!"
-```
-
-`greet()` is pure: it never writes to stdout and always returns the same value,
-which makes it safe to call from any context.
-
-To print the greeting from your own code, use `main()`:
-
-```python
-from hello_world import main
-
-exit_code = main()  # prints "Hello, World!" and returns 0
+```console
+$ python src/hello_world/hello_world.py
+Hello, World!
 ```
 
 ### Docker
@@ -106,14 +91,19 @@ docker build -t hello-world .
 docker run --rm hello-world
 ```
 
-## 📚 API Reference
+## 🔬 Implementation
 
-| Symbol                  | Type         | Description                                                       |
-| ----------------------- | ------------ | ----------------------------------------------------------------- |
-| `GREETING`              | `Final[str]` | The canonical greeting, `"Hello, World!"`.                        |
-| `greet()`               | `() -> str`  | Returns the greeting. Pure, no side effects.                      |
-| `main()`                | `() -> int`  | Prints the greeting to stdout and returns the exit code (`0`).    |
-| `__version__`           | `str`        | The package version, following Semantic Versioning.               |
+The entire implementation of the application fits in a single statement,
+located in [`src/hello_world/hello_world.py`](src/hello_world/hello_world.py):
+
+```python
+print("Hello, World!")
+```
+
+It is surrounded by 76 lines of comments documenting its overview, execution
+model, design principles, output contract, security considerations, error
+handling, performance and maintenance notes. A module docstring is
+deliberately not used, as it would count as a second statement.
 
 ### Exit codes
 
@@ -124,17 +114,14 @@ docker run --rm hello-world
 ## 🏗️ Architecture
 
 Hello World follows a deliberately simple, single-module architecture
-([ADR-0004](docs/adr/0004-single-module-layout.md)), with a strict separation
-between the composition of the greeting and its output
-([ADR-0003](docs/adr/0003-separate-greeting-composition-from-output.md)).
+([ADR-0004](docs/adr/0004-single-module-layout.md)), reduced to a single
+statement ([ADR-0009](docs/adr/0009-reduce-the-implementation-to-a-single-statement.md)).
 
 ```mermaid
 flowchart LR
-    Script["hello-world<br/>(console script)"] --> Main
-    Module["python -m hello_world<br/>(__main__.py)"] --> Main
-    Main["main()"] -->|composes via| Greet["greet()"]
-    Greet -->|returns| Greeting[["GREETING<br/>Final[str]"]]
-    Main -->|prints to| Stdout[("stdout")]
+    DashM["python -m hello_world<br/>(__main__.py)"] -->|runpy| Core
+    Script["python hello_world.py"] --> Core
+    Core["hello_world.py<br/>print(&quot;Hello, World!&quot;)"] -->|prints to| Stdout[("stdout")]
 ```
 
 See [docs/architecture.md](docs/architecture.md) for a detailed walkthrough and
@@ -143,13 +130,13 @@ See [docs/architecture.md](docs/architecture.md) for a detailed walkthrough and
 ## 📁 Project Structure
 
 ```text
-hello-world/
+HelloWorld/
 ├── src/hello_world/
-│   ├── __init__.py          # Public API and version
+│   ├── __init__.py          # Package metadata (version)
 │   ├── __main__.py          # `python -m hello_world` entry point
-│   ├── hello_world.py       # Core implementation
+│   ├── hello_world.py       # Core implementation (1 statement)
 │   └── py.typed             # PEP 561 marker
-├── tests/                   # 440 tests (see below)
+├── tests/                   # 429 tests (see below)
 ├── benchmarks/              # Micro-benchmarks
 ├── docs/
 │   ├── adr/                 # Architecture Decision Records
@@ -164,26 +151,25 @@ hello-world/
 ## 🧪 Testing
 
 ```bash
-make test        # run the full suite
+make test        # run the full test suite
 make coverage    # run with coverage (fails under 100%)
 make check       # lint + typecheck + tests, as in CI
 ```
 
-| Category       | Location             | Tests   | Purpose                                         |
-| -------------- | -------------------- | ------: | ----------------------------------------------- |
-| Security       | `tests/security/`    |     177 | Terminal injection and environment isolation    |
-| Conformance    | `tests/conformance/` |     127 | Byte-exact output contract on every surface     |
-| Unit           | `tests/unit/`        |      86 | `greet()`, `main()`, `GREETING`, packaging      |
-| End-to-end     | `tests/e2e/`         |      19 | Real executable in a subprocess                 |
-| Regression     | `tests/regression/`  |      10 | Previously fixed bugs                           |
-| Integration    | `tests/integration/` |       6 | Entry points, in-process                        |
-| Property-based | `tests/property/`    |       5 | Invariants under generated conditions           |
-| Doctests       | `src/`               |       4 | Examples in docstrings stay correct             |
-| Performance    | `tests/performance/` |       3 | Latency budgets                                 |
-| Concurrency    | `tests/concurrency/` |       3 | Thread safety                                   |
-| **Total**      |                      | **440** |                                                 |
+| Category       | Location             | Tests   | Purpose                                              |
+| -------------- | -------------------- | ------: | ---------------------------------------------------- |
+| Security       | `tests/security/`    |     177 | Terminal injection and environment isolation         |
+| Conformance    | `tests/conformance/` |     127 | Byte-exact output contract through every entry point |
+| Unit           | `tests/unit/`        |      77 | Behavior and structure of the core module            |
+| End-to-end     | `tests/e2e/`         |      19 | Real executable in a subprocess                      |
+| Regression     | `tests/regression/`  |      11 | Previously fixed bugs                                |
+| Integration    | `tests/integration/` |       7 | Entry points, in-process                             |
+| Property-based | `tests/property/`    |       5 | Invariants under generated conditions                |
+| Performance    | `tests/performance/` |       3 | Latency budgets                                      |
+| Concurrency    | `tests/concurrency/` |       3 | Thread and process safety                            |
+| **Total**      |                      | **429** |                                                      |
 
-The full suite runs in about 1.5 seconds. Run a single category with its
+The full suite runs in about 2 seconds. Run a single category with its
 marker, e.g. `pytest -m security`. See
 [docs/testing-strategy.md](docs/testing-strategy.md) for details.
 
@@ -191,39 +177,44 @@ marker, e.g. `pytest -m security`. See
 
 - [x] Core greeting engine
 - [x] `python -m` support
-- [x] Separation of composition and output
-- [x] Single source of truth for the greeting
 - [x] Security and conformance test suites
 - [x] 100% test coverage
 - [x] Docker image
+- [x] Reduce the implementation to a single statement
 - [ ] Internationalization (see [ADR-0005](docs/adr/0005-defer-internationalization.md))
-- [ ] Asynchronous API (`agreet()`)
-- [ ] OpenTelemetry instrumentation
 
 ## ❓ FAQ
 
 <details>
 <summary><b>Why not simply use <code>print("Hello, World!")</code>?</b></summary>
 
-That is essentially what `main()` does. However, keeping the composition of the
-greeting (`greet()`) separate from its output (`main()`) keeps the core logic
-pure, reusable and testable without capturing stdout. The rationale is detailed
-in [ADR-0003](docs/adr/0003-separate-greeting-composition-from-output.md).
+As of version 3.0.0, it does. The full rationale is available in
+[ADR-0009](docs/adr/0009-reduce-the-implementation-to-a-single-statement.md),
+and the history of the previous design in
+[ADR-0003](docs/adr/0003-separate-greeting-composition-from-output.md).
 
 </details>
 
 <details>
-<summary><b>Why is everything in a single module?</b></summary>
+<summary><b>Why are there so many comments for a single line of code?</b></summary>
 
-The current scope does not justify a multi-module layout. Splitting the code
-prematurely would add indirection without any benefit (YAGNI). The decision
-will be revisited if the module grows beyond 500 lines. See
-[ADR-0004](docs/adr/0004-single-module-layout.md).
+Every design decision affecting the implementation is documented next to it,
+where maintainers are most likely to read it. A module docstring would have
+been more idiomatic, but it would count as a second statement, which would
+violate ADR-0009.
 
 </details>
 
 <details>
-<summary><b>Why does <code>hello-world --help</code> print the greeting?</b></summary>
+<summary><b>Where did <code>greet()</code>, <code>main()</code> and <code>GREETING</code> go?</b></summary>
+
+They were removed in version 3.0.0, as no consumer of the Python API was ever
+identified. See the [migration guide](docs/migration/v2-to-v3.md).
+
+</details>
+
+<details>
+<summary><b>Why does <code>python -m hello_world --help</code> print the greeting?</b></summary>
 
 The application takes no arguments by design: command-line arguments are
 ignored, and the output is always the canonical greeting. This behavior is
@@ -242,8 +233,9 @@ deferred. See [ADR-0005](docs/adr/0005-defer-internationalization.md).
 <details>
 <summary><b>Is it thread-safe?</b></summary>
 
-Yes. `greet()` is a pure function returning an immutable constant. Thread
-safety is covered by a dedicated test suite.
+Yes. The implementation defines no variable, no function and no class: it has
+no state that could be shared between threads. Thread safety is nevertheless
+covered by a dedicated test suite.
 
 </details>
 

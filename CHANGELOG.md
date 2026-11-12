@@ -10,9 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 
 - Internationalization support (deferred, see [ADR-0005](docs/adr/0005-defer-internationalization.md)).
-- `agreet()`, an asynchronous variant of `greet()` for applications running inside an event loop.
-- OpenTelemetry instrumentation of `main()`.
 - Re-evaluate the single-module layout once `hello_world.py` exceeds 500 lines (see [ADR-0004](docs/adr/0004-single-module-layout.md)).
+
+## [3.0.0] - 2026-11-12
+
+### Changed
+
+- **BREAKING:** The implementation has been reduced to a single statement, `print("Hello, World!")` (see [ADR-0009](docs/adr/0009-reduce-the-implementation-to-a-single-statement.md)). See the [migration guide](docs/migration/v2-to-v3.md).
+- The core module is now documented exclusively with comments, as a module docstring would count as a second statement.
+- `python -m hello_world` now executes the core module with `runpy`, so that the greeting is printed on every invocation.
+- Importing the `hello_world` package no longer imports the core module, and therefore remains free of side effects ([#95]).
+
+### Removed
+
+- **BREAKING:** `greet()`, `main()` and `GREETING`.
+- **BREAKING:** The `hello-world` console script. Use `python -m hello_world` instead.
+- Doctests, as the source code no longer contains any docstring example.
 
 ## [2.3.1] - 2026-11-07
 
@@ -112,7 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial proof of concept.
 
-[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v2.3.1...HEAD
+[Unreleased]: https://github.com/Lomchat/HelloWorld/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/Lomchat/HelloWorld/compare/v2.3.1...v3.0.0
 [2.3.1]: https://github.com/Lomchat/HelloWorld/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/Lomchat/HelloWorld/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/Lomchat/HelloWorld/compare/v2.1.0...v2.2.0

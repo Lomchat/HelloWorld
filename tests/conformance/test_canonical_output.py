@@ -2,9 +2,9 @@
 
 The output of this program is its public contract. Downstream consumers
 (scripts, pipelines, monitoring probes) may depend on it byte for byte. These
-tests pin down every observable property of the greeting, on every public
-surface (``greet()``, ``GREETING`` and the stdout of ``main()``), so that any
-deviation, however small, is caught immediately.
+tests pin down every observable property of the greeting, through every
+entry point of the application, so that any deviation, however small, is
+caught immediately.
 """
 
 from __future__ import annotations

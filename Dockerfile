@@ -51,6 +51,6 @@ USER hello:hello
 
 # Verify that the application produces the canonical greeting.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD ["sh", "-c", "hello-world | grep -qxF 'Hello, World!'"]
+    CMD ["sh", "-c", "python -m hello_world | grep -qxF 'Hello, World!'"]
 
-ENTRYPOINT ["hello-world"]
+ENTRYPOINT ["python", "-m", "hello_world"]

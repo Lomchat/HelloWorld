@@ -1,20 +1,16 @@
 """Hello World: a robust, production-ready greeting application.
 
-This package exposes the public API of the application. All implementation
-details live in :mod:`hello_world.hello_world`.
+The implementation lives in :mod:`hello_world.hello_world`. It is
+intentionally NOT imported here: executing it prints the greeting, and
+importing the package must remain free of side effects (see #95).
 
-Example:
-    >>> from hello_world import greet
-    >>> greet()
-    'Hello, World!'
+Run the application with ``python -m hello_world``.
 """
 
 from __future__ import annotations
 
-from hello_world.hello_world import GREETING, greet, main
-
 # The package version, following Semantic Versioning 2.0.0 (https://semver.org).
 # This is the single source of truth, read by the build backend (see pyproject.toml).
-__version__ = "2.3.1"
+__version__ = "3.0.0"
 
-__all__ = ["GREETING", "__version__", "greet", "main"]
+__all__ = ["__version__"]

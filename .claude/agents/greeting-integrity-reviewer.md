@@ -23,8 +23,8 @@ H  e  l  l  o  ,     W  o  r  l  d  !  \n
 3. Run `python -m hello_world | od -An -tx1` and compare with the expected bytes above.
 4. Run `python src/hello_world/hello_world.py | od -An -tx1` and compare again.
 5. Run `.venv/bin/pytest -m "conformance or security or regression" -q`.
-6. Verify that the string `"Hello, World!"` appears exactly once as a literal in `src/` (in the `GREETING` assignment).
-7. Verify that `greet()` contains no I/O and that `main()` returns `0`.
+6. Verify that `src/hello_world/hello_world.py` contains exactly one statement, `print("Hello, World!")`, and nothing but comments around it.
+7. Verify that `python -c "import hello_world"` prints nothing.
 
 ## Output format
 

@@ -15,7 +15,7 @@ Closes #
 
 ## Output impact
 
-- [ ] The output of `hello-world` is unchanged (`./scripts/verify_output.sh` passes)
+- [ ] The output of `python -m hello_world` is unchanged (`./scripts/verify_output.sh` passes)
 - [ ] The output changes (requires a major version bump and an ADR)
 
 ## Checklist
@@ -31,7 +31,7 @@ Closes #
 
 ## Screenshots / Output
 
-<!-- If relevant, paste the output of `hello-world | od -c`. -->
+<!-- If relevant, paste the output of `python -m hello_world | od -c`. -->
 
 ```text
 

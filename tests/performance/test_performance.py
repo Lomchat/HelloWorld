@@ -14,28 +14,28 @@ import time
 
 import pytest
 
-from hello_world import greet, main
-from tests.helpers import run_hello_world
+from tests.helpers import MODULE_PATH, run_hello_world
 
 pytestmark = pytest.mark.performance
 
-
-def test_greet_average_latency_is_under_ten_microseconds():
-    iterations = 100_000
-    start = time.perf_counter()
-    for _ in range(iterations):
-        greet()
-    assert (time.perf_counter() - start) / iterations < 10e-6
+CODE = compile(MODULE_PATH.read_text(encoding="utf-8"), str(MODULE_PATH), "exec")
 
 
-def test_main_average_latency_is_under_one_hundred_microseconds():
+def test_executing_the_core_module_takes_under_one_hundred_microseconds():
     iterations = 10_000
     with contextlib.redirect_stdout(io.StringIO()):
         start = time.perf_counter()
         for _ in range(iterations):
-            main()
+            exec(CODE, {"__name__": "__main__"})  # noqa: S102 - trusted, own source
         elapsed = time.perf_counter() - start
     assert elapsed / iterations < 100e-6
+
+
+def test_compiling_the_core_module_takes_under_ten_milliseconds():
+    source = MODULE_PATH.read_text(encoding="utf-8")
+    start = time.perf_counter()
+    compile(source, str(MODULE_PATH), "exec")
+    assert time.perf_counter() - start < 10e-3
 
 
 def test_cold_start_is_under_two_seconds():

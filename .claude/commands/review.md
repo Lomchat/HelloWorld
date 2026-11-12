@@ -11,8 +11,8 @@ Check every item below and report findings grouped by severity (ðŸ”´ blocking, ð
 ## Invariants (blocking)
 
 - [ ] The output is still exactly `Hello, World!\n` on stdout, with nothing on stderr.
-- [ ] `greet()` is still pure and `main()` still returns `0`.
-- [ ] The greeting string is still defined exactly once, as `GREETING`.
+- [ ] `src/hello_world/hello_world.py` still contains exactly one statement: `print("Hello, World!")`.
+- [ ] Importing the `hello_world` package still prints nothing.
 - [ ] No new module was added to `src/`.
 - [ ] No runtime dependency was added.
 

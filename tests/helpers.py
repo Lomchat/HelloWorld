@@ -7,14 +7,16 @@ file, to guarantee consistent behavior across the whole suite.
 from __future__ import annotations
 
 import contextlib
+import io
 import os
+import runpy
 import subprocess
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, Mapping
+    from collections.abc import Callable, Iterator, Mapping
 
 #: Root directory of the repository.
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +32,37 @@ MODULE_PATH = SRC_DIR / "hello_world" / "hello_world.py"
 #: to the platform line separator ("\r\n" on Windows). In-process tests, which
 #: capture stdout without translation, always observe "\n".
 EXPECTED_STDOUT = f"Hello, World!{os.linesep}".encode("ascii")
+
+#: Every way of executing the application in-process, by name.
+_RUNNERS: dict[str, Callable[[], object]] = {
+    "python -m hello_world": lambda: runpy.run_module("hello_world", run_name="__main__"),
+    "hello_world.hello_world": lambda: runpy.run_module(
+        "hello_world.hello_world",
+        run_name="__main__",
+    ),
+    "hello_world.py": lambda: runpy.run_path(str(MODULE_PATH), run_name="__main__"),
+}
+
+#: The names of the in-process entry points, used to parametrize tests.
+ENTRY_POINTS = tuple(_RUNNERS)
+
+
+def run_in_process(entry_point: str = "python -m hello_world") -> str:
+    """Execute the application in the current process and return its output.
+
+    The module is executed (not imported), so that the greeting is printed on
+    every call, regardless of what is already in ``sys.modules``.
+
+    Args:
+        entry_point: One of :data:`ENTRY_POINTS`.
+
+    Returns:
+        Everything the application wrote to stdout.
+    """
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        _RUNNERS[entry_point]()
+    return buffer.getvalue()
 
 
 def run_hello_world(

@@ -1,14 +1,12 @@
 """Property-based tests powered by Hypothesis.
 
 Instead of checking a handful of hand-picked scenarios, these tests assert
-invariants that must hold under *any* generated conditions: arbitrary call
-counts, environments, random seeds and command-line arguments.
+invariants that must hold under *any* generated conditions: arbitrary
+execution counts, environments, random seeds and command-line arguments.
 """
 
 from __future__ import annotations
 
-import contextlib
-import io
 import random
 import sys
 
@@ -16,8 +14,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from hello_world import GREETING, greet, main
-from tests.helpers import patched_environ
+from tests.helpers import ENTRY_POINTS, patched_environ, run_in_process
 
 pytestmark = pytest.mark.property
 
@@ -31,41 +28,34 @@ env_values = st.text(
 )
 
 
-@given(calls=st.integers(min_value=1, max_value=100))
-def test_greet_is_stable_across_any_number_of_calls(calls):
-    assert {greet() for _ in range(calls)} == {GREETING}
+@given(executions=st.integers(min_value=1, max_value=50))
+def test_output_is_stable_across_any_number_of_executions(executions):
+    assert {run_in_process() for _ in range(executions)} == {"Hello, World!\n"}
+
+
+@given(entry_point=st.sampled_from(ENTRY_POINTS))
+def test_output_is_identical_for_every_entry_point(entry_point):
+    assert run_in_process(entry_point) == "Hello, World!\n"
 
 
 @given(environment=st.dictionaries(env_names, env_values, max_size=10))
-def test_greet_is_independent_of_the_environment(environment):
+def test_output_is_independent_of_the_environment(environment):
     with patched_environ(environment):
-        assert greet() == "Hello, World!"
+        assert run_in_process() == "Hello, World!\n"
 
 
 @given(seed=st.integers())
-def test_greet_is_independent_of_the_random_seed(seed):
+def test_output_is_independent_of_the_random_seed(seed):
     random.seed(seed)
-    assert greet() == "Hello, World!"
+    assert run_in_process() == "Hello, World!\n"
 
 
 @given(argv=st.lists(st.text(st.characters(codec="utf-8", exclude_characters="\x00"))))
-def test_main_output_is_independent_of_command_line_arguments(argv):
+def test_output_is_independent_of_command_line_arguments(argv):
     original = sys.argv
-    sys.argv = ["hello-world", *argv]
+    sys.argv = ["hello_world", *argv]
     try:
-        buffer = io.StringIO()
-        with contextlib.redirect_stdout(buffer):
-            exit_code = main()
+        output = run_in_process()
     finally:
         sys.argv = original
-    assert buffer.getvalue() == "Hello, World!\n"
-    assert exit_code == 0
-
-
-@given(calls=st.integers(min_value=1, max_value=50))
-def test_main_prints_exactly_one_line_per_call(calls):
-    buffer = io.StringIO()
-    with contextlib.redirect_stdout(buffer):
-        for _ in range(calls):
-            main()
-    assert buffer.getvalue().splitlines() == [GREETING] * calls
+    assert output == "Hello, World!\n"

@@ -1,4 +1,4 @@
-"""Tests for package-level metadata, public API, layout and code hygiene."""
+"""Tests for package-level metadata, layout and code hygiene."""
 
 from __future__ import annotations
 
@@ -11,14 +11,15 @@ from pathlib import Path
 import pytest
 
 import hello_world
-from hello_world import hello_world as core
 from tests.helpers import PROJECT_ROOT
 
 pytestmark = pytest.mark.unit
 
 PACKAGE_DIR = Path(hello_world.__file__).resolve().parent
-MODULES = ["hello_world", "hello_world.__main__", "hello_world.hello_world"]
 SOURCE_FILES = sorted(PACKAGE_DIR.glob("*.py"))
+
+#: Modules that contain Python code besides the core statement.
+SUPPORT_FILES = [path for path in SOURCE_FILES if path.name != "hello_world.py"]
 
 # Official SemVer 2.0.0 regular expression (https://semver.org).
 SEMVER_PATTERN = re.compile(
@@ -34,27 +35,16 @@ def _pyproject() -> dict:
 
 
 class TestPublicApi:
-    @pytest.mark.parametrize("name", hello_world.__all__)
-    def test_exported_name_exists(self, name):
-        assert hasattr(hello_world, name)
+    def test_package_exports_only_the_version(self):
+        assert hello_world.__all__ == ["__version__"]
 
-    def test_package_exports(self):
-        assert hello_world.__all__ == ["GREETING", "__version__", "greet", "main"]
+    @pytest.mark.parametrize("name", ["greet", "main", "GREETING"])
+    def test_removed_names_are_not_exported(self, name):
+        assert not hasattr(hello_world, name)
 
-    def test_module_exports(self):
-        assert core.__all__ == ["GREETING", "greet", "main"]
-
-    @pytest.mark.parametrize("name", ["GREETING", "greet", "main"])
-    def test_package_re_exports_the_module_objects(self, name):
-        assert getattr(hello_world, name) is getattr(core, name)
-
-    @pytest.mark.parametrize("exports", [hello_world.__all__, core.__all__])
-    def test_exports_are_sorted(self, exports):
-        assert exports == sorted(exports)
-
-    @pytest.mark.parametrize("exports", [hello_world.__all__, core.__all__])
-    def test_exports_have_no_duplicates(self, exports):
-        assert len(exports) == len(set(exports))
+    def test_importing_the_package_has_no_side_effects(self, capsys):
+        importlib.reload(hello_world)
+        assert capsys.readouterr() == ("", "")
 
 
 class TestVersion:
@@ -85,10 +75,8 @@ class TestPackaging:
     def test_has_no_runtime_dependencies(self):
         assert _pyproject()["project"]["dependencies"] == []
 
-    def test_console_script_points_to_main(self):
-        target = _pyproject()["project"]["scripts"]["hello-world"]
-        module_name, _, attribute = target.partition(":")
-        assert getattr(importlib.import_module(module_name), attribute) is core.main
+    def test_declares_no_console_script(self):
+        assert "scripts" not in _pyproject()["project"]
 
     def test_supported_python_version_is_declared(self):
         assert _pyproject()["project"]["requires-python"] == ">=3.10"
@@ -98,16 +86,12 @@ class TestPackaging:
 
 
 class TestCodeHygiene:
-    @pytest.mark.parametrize("module_name", MODULES)
-    def test_every_module_has_a_docstring(self, module_name):
+    @pytest.mark.parametrize("module_name", ["hello_world", "hello_world.__main__"])
+    def test_support_modules_have_a_docstring(self, module_name):
         assert inspect.getdoc(importlib.import_module(module_name))
 
-    @pytest.mark.parametrize("function", [core.greet, core.main], ids=["greet", "main"])
-    def test_every_public_function_has_a_docstring(self, function):
-        assert inspect.getdoc(function)
-
-    @pytest.mark.parametrize("path", SOURCE_FILES, ids=lambda path: path.name)
-    def test_source_files_use_postponed_annotations(self, path):
+    @pytest.mark.parametrize("path", SUPPORT_FILES, ids=lambda path: path.name)
+    def test_support_modules_use_postponed_annotations(self, path):
         assert "from __future__ import annotations" in path.read_text(encoding="utf-8")
 
     @pytest.mark.parametrize("path", SOURCE_FILES, ids=lambda path: path.name)
@@ -122,3 +106,9 @@ class TestCodeHygiene:
     def test_source_files_have_no_trailing_whitespace(self, path):
         lines = path.read_text(encoding="utf-8").splitlines()
         assert [line for line in lines if line != line.rstrip()] == []
+
+    @pytest.mark.parametrize("path", SOURCE_FILES, ids=lambda path: path.name)
+    def test_print_is_called_at_most_once(self, path):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        code = [line for line in lines if not line.lstrip().startswith("#")]
+        assert "\n".join(code).count("print(") <= 1

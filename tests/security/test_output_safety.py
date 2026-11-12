@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from hello_world import main
+from tests.helpers import run_in_process
 
 pytestmark = pytest.mark.security
 
@@ -77,7 +77,6 @@ class TestControlCharacters:
 
 class TestEnvironmentIsolation:
     @pytest.mark.parametrize(("variable", "value"), ENVIRONMENT_OVERRIDES)
-    def test_output_is_not_affected_by(self, monkeypatch, capsys, variable, value):
+    def test_output_is_not_affected_by(self, monkeypatch, variable, value):
         monkeypatch.setenv(variable, value)
-        main()
-        assert capsys.readouterr().out == "Hello, World!\n"
+        assert run_in_process() == "Hello, World!\n"

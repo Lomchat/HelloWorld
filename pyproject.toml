@@ -40,9 +40,6 @@ dev = [
     "ruff>=0.5",
 ]
 
-[project.scripts]
-hello-world = "hello_world.hello_world:main"
-
 [project.urls]
 Homepage = "https://github.com/Lomchat/HelloWorld"
 Documentation = "https://github.com/Lomchat/HelloWorld/tree/main/docs"
@@ -123,6 +120,9 @@ convention = "google"
     "S603",    # Subprocess calls in end-to-end tests are trusted.
 ]
 "benchmarks/**/*.py" = ["T20", "S101", "D"]
+# The core module intentionally has no docstring: it would count as a second
+# statement, and the module must contain exactly one (see ADR-0009).
+"src/hello_world/hello_world.py" = ["D100"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -146,7 +146,7 @@ files = ["src"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-testpaths = ["tests", "src"]
+testpaths = ["tests"]
 pythonpath = ["src", "."]
 addopts = [
     "-ra",

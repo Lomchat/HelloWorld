@@ -6,37 +6,29 @@ import runpy
 
 import pytest
 
-from hello_world import greet, main
-from tests.helpers import MODULE_PATH
+from tests.helpers import ENTRY_POINTS, MODULE_PATH, run_in_process
 
 pytestmark = pytest.mark.integration
 
-
-def test_main_prints_what_greet_returns(capsys):
-    main()
-    assert capsys.readouterr().out == f"{greet()}\n"
+SUPPORT_FILES = sorted(p for p in MODULE_PATH.parent.glob("*.py") if p != MODULE_PATH)
 
 
-def test_dash_m_entry_point(capsys):
-    with pytest.raises(SystemExit) as excinfo:
-        runpy.run_module("hello_world", run_name="__main__")
-    assert excinfo.value.code == 0
-    assert capsys.readouterr().out == "Hello, World!\n"
+@pytest.mark.parametrize("entry_point", ENTRY_POINTS)
+def test_entry_point_prints_the_greeting(entry_point):
+    assert run_in_process(entry_point) == "Hello, World!\n"
 
 
-def test_script_entry_point(capsys):
-    with pytest.raises(SystemExit) as excinfo:
-        runpy.run_path(str(MODULE_PATH), run_name="__main__")
-    assert excinfo.value.code == 0
-    assert capsys.readouterr().out == "Hello, World!\n"
+def test_every_entry_point_produces_the_same_output():
+    assert len({run_in_process(entry_point) for entry_point in ENTRY_POINTS}) == 1
 
 
-@pytest.mark.parametrize(
-    "path",
-    sorted(MODULE_PATH.parent.glob("*.py")),
-    ids=lambda path: path.name,
-)
-def test_executing_a_module_without_running_it_has_no_side_effects(capsys, path):
+def test_dash_m_entry_point_does_not_exit_explicitly():
+    # The process exit status is 0 because the module completes normally.
+    assert runpy.run_module("hello_world", run_name="__main__") is not None
+
+
+@pytest.mark.parametrize("path", SUPPORT_FILES, ids=lambda path: path.name)
+def test_support_modules_have_no_side_effects_unless_run(capsys, path):
     # A run name other than "__main__" mimics a plain import, in a fresh namespace
     # that leaves sys.modules untouched.
     runpy.run_path(str(path), run_name="__not_main__")

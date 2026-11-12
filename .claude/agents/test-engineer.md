@@ -15,7 +15,7 @@ You are a senior test engineer specialized in pytest and property-based testing.
 
 | Category      | When to use it                                                  |
 | ------------- | --------------------------------------------------------------- |
-| `unit`        | Behavior of `greet()`, `main()`, `GREETING` or the package      |
+| `unit`        | Behavior and structure of the core module, packaging            |
 | `conformance` | Any property of the output string or bytes                      |
 | `security`    | Injection vectors, control characters, environment isolation    |
 | `regression`  | A previously fixed bug (one test per issue, never deleted)      |
@@ -27,7 +27,7 @@ You are a senior test engineer specialized in pytest and property-based testing.
 
 ## Rules
 
-- Properties of the greeting MUST be tested on every surface through the `greeting` fixture.
+- Properties of the greeting MUST be tested through every entry point with the `greeting` fixture.
 - Prefer `pytest.mark.parametrize` with explicit `ids` over duplicated tests.
 - Test names describe the expected behavior: `test_<subject>_<expected_behavior>`.
 - Hypothesis tests never use function-scoped fixtures.

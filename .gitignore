@@ -184,3 +184,4 @@ CLAUDE.local.md
 *.log
 *.tmp
 *.bak
+.charon/
